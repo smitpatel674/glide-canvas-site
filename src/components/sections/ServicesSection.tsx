@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -6,6 +6,7 @@ import { Code2, Brain, Cloud, Layers, Smartphone, Boxes } from "lucide-react";
 import ServiceMiniScene from "@/components/canvas/ServiceMiniScene";
 import { CanvasErrorBoundary } from "@/components/canvas/CanvasErrorBoundary";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { useIsMobile } from "@/hooks/useInViewCanvas";
 
 const SERVICES = [
   { icon: Code2, title: "Product Engineering", desc: "Full-stack web & SaaS platforms built on Next.js, TypeScript and edge runtimes.", color: "#6C63FF" },
@@ -18,9 +19,12 @@ const SERVICES = [
 
 const Card = ({ s, idx }: { s: (typeof SERVICES)[number]; idx: number }) => {
   const ref = useRef<HTMLElement>(null);
+  const [hovered, setHovered] = useState(false);
+  const isMobile = useIsMobile();
 
-  // 3D tilt on mouse move
+  // 3D tilt on mouse move (desktop only)
   const onMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (isMobile) return;
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
@@ -30,6 +34,7 @@ const Card = ({ s, idx }: { s: (typeof SERVICES)[number]; idx: number }) => {
     el.style.setProperty("--tilt-y", `${px * 8}deg`);
   };
   const onLeave = () => {
+    setHovered(false);
     const el = ref.current;
     if (!el) return;
     el.style.setProperty("--tilt-x", `0deg`);
@@ -41,6 +46,7 @@ const Card = ({ s, idx }: { s: (typeof SERVICES)[number]; idx: number }) => {
     <article
       ref={ref}
       data-service-card
+      onMouseEnter={() => !isMobile && setHovered(true)}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       className="group relative glass-strong rounded-3xl p-7 overflow-hidden perspective-1000 transition-colors duration-500 hover:border-primary/30"
@@ -51,15 +57,17 @@ const Card = ({ s, idx }: { s: (typeof SERVICES)[number]; idx: number }) => {
         transition: "transform 0.4s var(--ease-out-expo)",
       }}
     >
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-700 pointer-events-none">
-        <CanvasErrorBoundary>
-          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }}>
-            <Suspense fallback={null}>
-              <ServiceMiniScene color={s.color} />
-            </Suspense>
-          </Canvas>
-        </CanvasErrorBoundary>
-      </div>
+      {hovered && (
+        <div className="absolute inset-0 opacity-40 pointer-events-none animate-fade-in">
+          <CanvasErrorBoundary>
+            <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }}>
+              <Suspense fallback={null}>
+                <ServiceMiniScene color={s.color} />
+              </Suspense>
+            </Canvas>
+          </CanvasErrorBoundary>
+        </div>
+      )}
       <div className="relative z-10 flex flex-col gap-5">
         <div className="flex items-center justify-between">
           <span

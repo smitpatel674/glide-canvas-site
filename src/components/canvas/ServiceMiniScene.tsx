@@ -17,12 +17,11 @@ export default function ServiceMiniScene({ color = "#6C63FF" }: { color?: string
       <pointLight position={[3, 3, 3]} color={color} intensity={20} />
       <pointLight position={[-3, -3, 2]} color="#E8E4FF" intensity={10} />
       <mesh ref={ref}>
-        <torusKnotGeometry args={[0.7, 0.22, 128, 16]} />
+        <torusKnotGeometry args={[0.7, 0.22, 64, 12]} />
         <meshPhysicalMaterial
           color={color}
-          roughness={0.1}
+          roughness={0.2}
           metalness={0.85}
-          clearcoat={1}
         />
       </mesh>
     </>
