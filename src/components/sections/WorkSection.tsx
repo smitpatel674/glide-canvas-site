@@ -67,7 +67,7 @@ export const WorkSection = () => {
             scaleX: 1,
             duration: 1.2,
             ease: "expo.out",
-            scrollTrigger: { trigger: el, start: "left 80%", containerAnimation: ScrollTrigger.getById(el.id) ?? undefined },
+            scrollTrigger: { trigger: el, start: "left 80%" },
           },
         );
       });
