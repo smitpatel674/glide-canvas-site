@@ -2,7 +2,7 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-/** Metaball-ish background for Contact — animated noise plane w/ gradient. */
+/** Metaball-ish background — animated noise plane with gradient (cheap). */
 export default function ContactScene() {
   const ref = useRef<THREE.Mesh>(null!);
 
@@ -23,9 +23,8 @@ export default function ContactScene() {
 
   return (
     <>
-      <ambientLight intensity={0.5} />
       <mesh ref={ref} scale={[8, 8, 1]}>
-        <planeGeometry args={[1, 1, 64, 64]} />
+        <planeGeometry args={[1, 1, 1, 1]} />
         <shaderMaterial
           uniforms={uniforms}
           vertexShader={/* glsl */ `
@@ -36,14 +35,13 @@ export default function ContactScene() {
             }
           `}
           fragmentShader={/* glsl */ `
-            precision highp float;
+            precision mediump float;
             uniform float uTime;
             uniform vec3 uColorA;
             uniform vec3 uColorB;
             uniform vec3 uColorBg;
             varying vec2 vUv;
 
-            // simplex-ish cheap noise
             float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
             float noise(vec2 p) {
               vec2 i = floor(p), f = fract(p);
@@ -57,12 +55,11 @@ export default function ContactScene() {
 
             void main() {
               vec2 uv = vUv * 3.0;
-              float n = noise(uv + uTime * 0.15);
-              n += 0.5 * noise(uv * 2.0 - uTime * 0.1);
+              float n = noise(uv + uTime * 0.12);
+              n += 0.5 * noise(uv * 2.0 - uTime * 0.08);
               float m = smoothstep(0.4, 1.2, n);
               vec3 col = mix(uColorBg, uColorA, m);
               col = mix(col, uColorB, smoothstep(0.85, 1.1, n) * 0.6);
-              // vignette
               float d = distance(vUv, vec2(0.5));
               col *= smoothstep(0.9, 0.2, d);
               gl_FragColor = vec4(col, 1.0);
