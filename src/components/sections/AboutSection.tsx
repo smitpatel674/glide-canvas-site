@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import RibbonScene from "@/components/canvas/RibbonScene";
 import { CanvasErrorBoundary } from "@/components/canvas/CanvasErrorBoundary";
+import { useInViewCanvas, useIsMobile } from "@/hooks/useInViewCanvas";
 
 const PANELS = [
   {
@@ -26,6 +27,8 @@ const PANELS = [
 export const AboutSection = () => {
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const { ref: canvasWrap, inView } = useInViewCanvas<HTMLDivElement>("150px");
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!wrapRef.current || !trackRef.current) return;
@@ -60,11 +63,16 @@ export const AboutSection = () => {
       className="relative h-[100svh] w-full overflow-hidden bg-background"
       aria-label="Philosophy"
     >
-      <div className="absolute inset-0 -z-10 opacity-70" aria-hidden>
+      <div ref={canvasWrap} className="absolute inset-0 -z-10 opacity-70" aria-hidden>
         <CanvasErrorBoundary>
-          <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 6], fov: 50 }}>
+          <Canvas
+            dpr={isMobile ? [1, 1.25] : [1, 1.75]}
+            camera={{ position: [0, 0, 6], fov: 50 }}
+            frameloop={inView ? "always" : "demand"}
+            gl={{ antialias: !isMobile, powerPreference: "high-performance" }}
+          >
             <Suspense fallback={null}>
-              <RibbonScene />
+              <RibbonScene lite={isMobile} />
             </Suspense>
           </Canvas>
         </CanvasErrorBoundary>
