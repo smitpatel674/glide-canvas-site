@@ -1,12 +1,12 @@
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useRef, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { motion, useMotionValue, useSpring, useTransform, type HTMLMotionProps } from "framer-motion";
+import { useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-interface MagneticButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+type MagneticButtonProps = Omit<HTMLMotionProps<"button">, "ref" | "children"> & {
   children: ReactNode;
   variant?: "primary" | "ghost";
   strength?: number;
-}
+};
 
 /** Magnetic button — cursor distortion effect on hover. */
 export const MagneticButton = ({
@@ -52,7 +52,7 @@ export const MagneticButton = ({
           "glass-strong text-foreground hover:bg-white/[0.08]",
         className,
       )}
-      {...(rest as React.ComponentProps<typeof motion.button>)}
+      {...rest}
     >
       <span className="relative z-10 flex items-center gap-2">{children}</span>
     </motion.button>
