@@ -1,28 +1,21 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { MeshTransmissionMaterial, Float, Environment } from "@react-three/drei";
+import { MeshTransmissionMaterial, Float } from "@react-three/drei";
 import * as THREE from "three";
 import { useScrollStore } from "@/store/scrollStore";
 
 /**
- * HeroScene — Floating glass icosahedron + violet point light orbit
- * + 5000-point particle field with depth fade shader.
- *
- * Performance:
- * - useMemo for geometries / attribute arrays
- * - dispose handled by R3F when meshes unmount
- * - particle field uses a single BufferGeometry + ShaderMaterial
+ * HeroScene — lighter than v1: no Environment HDR, no shadows,
+ * lower particle count, fewer transmission samples. Mobile-first.
  */
 
-const PARTICLE_COUNT = 2500; // dialled from 5000 for mobile headroom
-
-function ParticleField() {
+function ParticleField({ count }: { count: number }) {
   const points = useRef<THREE.Points>(null!);
 
   const { positions, scales } = useMemo(() => {
-    const pos = new Float32Array(PARTICLE_COUNT * 3);
-    const sca = new Float32Array(PARTICLE_COUNT);
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const pos = new Float32Array(count * 3);
+    const sca = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
       const r = 6 + Math.random() * 14;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
@@ -32,9 +25,8 @@ function ParticleField() {
       sca[i] = Math.random();
     }
     return { positions: pos, scales: sca };
-  }, []);
+  }, [count]);
 
-  // Custom GLSL — depth-fade soft circle particles tinted violet/mint
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
@@ -48,9 +40,7 @@ function ParticleField() {
   useFrame((_, dt) => {
     uniforms.uTime.value += dt;
     uniforms.uVelocity.value = useScrollStore.getState().velocity;
-    if (points.current) {
-      points.current.rotation.y += dt * 0.04;
-    }
+    if (points.current) points.current.rotation.y += dt * 0.04;
   });
 
   return (
@@ -112,36 +102,45 @@ function ParticleField() {
   );
 }
 
-function GlassMesh() {
+function GlassMesh({ lite }: { lite: boolean }) {
   const ref = useRef<THREE.Mesh>(null!);
-  useFrame((state, dt) => {
+  useFrame((state) => {
     if (!ref.current) return;
     const t = state.clock.elapsedTime;
     ref.current.rotation.x = t * 0.15;
     ref.current.rotation.y = t * 0.2;
-    // dolly with scroll progress
     const p = useScrollStore.getState().progress;
     ref.current.position.z = THREE.MathUtils.lerp(ref.current.position.z, -p * 4, 0.05);
     ref.current.scale.setScalar(THREE.MathUtils.lerp(ref.current.scale.x, 1 - p * 0.3, 0.06));
-    void dt;
   });
 
   return (
-    <Float speed={1.2} floatIntensity={0.8} rotationIntensity={0.4}>
+    <Float speed={1.2} floatIntensity={0.6} rotationIntensity={0.3}>
       <mesh ref={ref}>
-        <icosahedronGeometry args={[1.6, 4]} />
-        <MeshTransmissionMaterial
-          backside
-          samples={6}
-          thickness={1.4}
-          chromaticAberration={0.4}
-          anisotropy={0.6}
-          distortion={0.3}
-          distortionScale={0.4}
-          temporalDistortion={0.2}
-          ior={1.4}
-          color="#E8E4FF"
-        />
+        <icosahedronGeometry args={[1.6, lite ? 1 : 2]} />
+        {lite ? (
+          <meshPhysicalMaterial
+            color="#E8E4FF"
+            roughness={0.15}
+            metalness={0.6}
+            clearcoat={0.6}
+            transmission={0.4}
+            thickness={0.6}
+            ior={1.3}
+          />
+        ) : (
+          <MeshTransmissionMaterial
+            samples={2}
+            thickness={1.2}
+            chromaticAberration={0.25}
+            anisotropy={0.4}
+            distortion={0.2}
+            distortionScale={0.3}
+            temporalDistortion={0}
+            ior={1.4}
+            color="#E8E4FF"
+          />
+        )}
       </mesh>
     </Float>
   );
@@ -159,22 +158,15 @@ function OrbitingLight() {
   return <pointLight ref={ref} color="#6C63FF" intensity={40} distance={12} />;
 }
 
-export default function HeroScene() {
+export default function HeroScene({ lite = false }: { lite?: boolean }) {
   return (
     <>
-      <ambientLight intensity={0.2} />
-      <spotLight
-        position={[5, 8, 5]}
-        intensity={80}
-        angle={0.5}
-        penumbra={0.8}
-        color="#E8E4FF"
-        castShadow
-      />
-      <OrbitingLight />
-      <Environment preset="night" />
-      <GlassMesh />
-      <ParticleField />
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[5, 8, 5]} intensity={1.2} color="#E8E4FF" />
+      <pointLight position={[-4, -2, -2]} intensity={15} color="#6C63FF" />
+      {!lite && <OrbitingLight />}
+      <GlassMesh lite={lite} />
+      <ParticleField count={lite ? 700 : 1500} />
     </>
   );
 }

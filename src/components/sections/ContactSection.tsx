@@ -7,6 +7,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
+import { useInViewCanvas, useIsMobile } from "@/hooks/useInViewCanvas";
 
 const FIELDS = [
   { name: "name", label: "Your name", type: "text", placeholder: "Ada Lovelace" },
@@ -18,6 +19,8 @@ const FIELDS = [
 export const ContactSection = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const [submitting, setSubmitting] = useState(false);
+  const { ref: canvasWrap, inView } = useInViewCanvas<HTMLDivElement>("150px");
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!formRef.current) return;
@@ -47,9 +50,14 @@ export const ContactSection = () => {
   return (
     <section id="contact" className="relative min-h-[100svh] py-32 overflow-hidden" aria-label="Contact">
       {/* R3F background */}
-      <div className="absolute inset-0 -z-10 opacity-80" aria-hidden>
+      <div ref={canvasWrap} className="absolute inset-0 -z-10 opacity-80" aria-hidden>
         <CanvasErrorBoundary>
-          <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 4], fov: 50 }}>
+          <Canvas
+            dpr={isMobile ? [1, 1.25] : [1, 1.5]}
+            camera={{ position: [0, 0, 4], fov: 50 }}
+            frameloop={inView ? "always" : "demand"}
+            gl={{ antialias: false, powerPreference: "high-performance" }}
+          >
             <Suspense fallback={null}>
               <ContactScene />
             </Suspense>

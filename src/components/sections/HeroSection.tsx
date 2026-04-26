@@ -6,6 +6,7 @@ import HeroScene from "@/components/canvas/HeroScene";
 import { CanvasErrorBoundary } from "@/components/canvas/CanvasErrorBoundary";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { useInViewCanvas, useIsMobile } from "@/hooks/useInViewCanvas";
 
 const STATS = [
   { value: 200, suffix: "+", label: "Projects Delivered" },
@@ -36,6 +37,8 @@ function CountUp({ to, suffix }: { to: number; suffix: string }) {
 
 export const HeroSection = () => {
   const headlineRef = useRef<HTMLHeadingElement>(null);
+  const { ref: canvasWrap, inView } = useInViewCanvas<HTMLDivElement>("100px");
+  const isMobile = useIsMobile();
 
   // Char-by-char stagger reveal (lightweight SplitText alternative — keeps a11y intact)
   useEffect(() => {
@@ -64,15 +67,16 @@ export const HeroSection = () => {
       aria-label="Hero"
     >
       {/* Canvas background */}
-      <div className="absolute inset-0 -z-10" aria-hidden>
+      <div ref={canvasWrap} className="absolute inset-0 -z-10" aria-hidden>
         <CanvasErrorBoundary>
           <Canvas
-            dpr={[1, 2]}
+            dpr={isMobile ? [1, 1.25] : [1, 1.75]}
             camera={{ position: [0, 0, 6], fov: 45 }}
-            gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+            frameloop={inView ? "always" : "demand"}
+            gl={{ antialias: !isMobile, alpha: true, powerPreference: "high-performance" }}
           >
             <Suspense fallback={null}>
-              <HeroScene />
+              <HeroScene lite={isMobile} />
             </Suspense>
           </Canvas>
         </CanvasErrorBoundary>
