@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useSpring, useTransform, type HTMLMotionProps } from "framer-motion";
-import { useRef, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type MagneticButtonProps = Omit<HTMLMotionProps<"button">, "ref" | "children"> & {
@@ -17,23 +17,32 @@ export const MagneticButton = ({
   ...rest
 }: MagneticButtonProps) => {
   const ref = useRef<HTMLButtonElement>(null);
+  const frame = useRef<number | null>(null);
+  const [interactive, setInteractive] = useState(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const sx = useSpring(x, { stiffness: 200, damping: 18, mass: 0.4 });
-  const sy = useSpring(y, { stiffness: 200, damping: 18, mass: 0.4 });
-  const rotX = useTransform(sy, [-30, 30], [8, -8]);
-  const rotY = useTransform(sx, [-30, 30], [-8, 8]);
+  const sx = useSpring(x, { stiffness: 180, damping: 20, mass: 0.5 });
+  const sy = useSpring(y, { stiffness: 180, damping: 20, mass: 0.5 });
+  const rotX = useTransform(sy, [-24, 24], [6, -6]);
+  const rotY = useTransform(sx, [-24, 24], [-6, 6]);
 
   const onMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!ref.current) return;
+    if (!interactive || !ref.current) return;
     const r = ref.current.getBoundingClientRect();
     const mx = e.clientX - r.left - r.width / 2;
     const my = e.clientY - r.top - r.height / 2;
-    x.set(mx * strength);
-    y.set(my * strength);
+
+    if (frame.current) cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => {
+      x.set(mx * strength);
+      y.set(my * strength);
+    });
   };
   const onLeave = () => {
+    setInteractive(false);
+    if (frame.current) cancelAnimationFrame(frame.current);
+    frame.current = null;
     x.set(0);
     y.set(0);
   };
@@ -41,6 +50,7 @@ export const MagneticButton = ({
   return (
     <motion.button
       ref={ref}
+      onPointerEnter={() => setInteractive(window.matchMedia("(hover: hover) and (pointer: fine)").matches)}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       style={{ x: sx, y: sy, rotateX: rotX, rotateY: rotY, transformStyle: "preserve-3d" }}
