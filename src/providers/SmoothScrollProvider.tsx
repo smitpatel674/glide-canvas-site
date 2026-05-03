@@ -18,24 +18,30 @@ export const SmoothScrollProvider = ({ children }: { children: ReactNode }) => {
   const setScroll = useScrollStore((s) => s.setScroll);
 
   useEffect(() => {
+    ScrollTrigger.config({ limitCallbacks: true, ignoreMobileResize: true });
+
     const reduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const lenis = new Lenis({
-      lerp: reduced ? 1 : 0.08,
-      duration: reduced ? 0 : 1.4,
+      lerp: reduced ? 1 : 0.12,
+      duration: reduced ? 0 : 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo-ish
-      wheelMultiplier: 1,
-      touchMultiplier: 1.5,
+      wheelMultiplier: 0.95,
+      touchMultiplier: 1.1,
       smoothWheel: !reduced,
     });
     lenisRef.current = lenis;
 
+    let lastProgress = -1;
     lenis.on("scroll", (e: { progress: number; velocity: number; scroll: number }) => {
       setScroll({ progress: e.progress, velocity: e.velocity, scrollY: e.scroll });
-      // Expose CSS custom property for shader-free DOM effects
-      document.documentElement.style.setProperty("--scroll-progress", String(e.progress));
+      // Expose CSS custom property for shader-free DOM effects without thrashing style writes.
+      if (Math.abs(e.progress - lastProgress) > 0.001) {
+        document.documentElement.style.setProperty("--scroll-progress", String(e.progress));
+        lastProgress = e.progress;
+      }
     });
 
     // Bridge Lenis -> GSAP ticker so ScrollTrigger stays perfectly aligned
@@ -44,8 +50,8 @@ export const SmoothScrollProvider = ({ children }: { children: ReactNode }) => {
     gsap.ticker.lagSmoothing(0);
 
     // Refresh on layout shifts
-    const refresh = () => ScrollTrigger.refresh();
-    window.addEventListener("resize", refresh);
+    const refresh = () => requestAnimationFrame(() => ScrollTrigger.refresh());
+    window.addEventListener("resize", refresh, { passive: true });
 
     return () => {
       gsap.ticker.remove(tickerCb);
