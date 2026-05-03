@@ -3,6 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Code2, Brain, Cloud, Layers, Smartphone, Boxes } from "lucide-react";
+import { useMotionValue, useSpring } from "framer-motion";
 import ServiceMiniScene from "@/components/canvas/ServiceMiniScene";
 import { CanvasErrorBoundary } from "@/components/canvas/CanvasErrorBoundary";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -21,6 +22,10 @@ const Card = ({ s, idx }: { s: (typeof SERVICES)[number]; idx: number }) => {
   const ref = useRef<HTMLElement>(null);
   const [hovered, setHovered] = useState(false);
   const isMobile = useIsMobile();
+  const tiltX = useMotionValue(0);
+  const tiltY = useMotionValue(0);
+  const springTiltX = useSpring(tiltX, { stiffness: 160, damping: 18, mass: 0.5 });
+  const springTiltY = useSpring(tiltY, { stiffness: 160, damping: 18, mass: 0.5 });
 
   // 3D tilt on mouse move (desktop only)
   const onMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -30,15 +35,13 @@ const Card = ({ s, idx }: { s: (typeof SERVICES)[number]; idx: number }) => {
     const r = el.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width - 0.5;
     const py = (e.clientY - r.top) / r.height - 0.5;
-    el.style.setProperty("--tilt-x", `${py * -8}deg`);
-    el.style.setProperty("--tilt-y", `${px * 8}deg`);
+    tiltX.set(py * -6);
+    tiltY.set(px * 6);
   };
   const onLeave = () => {
     setHovered(false);
-    const el = ref.current;
-    if (!el) return;
-    el.style.setProperty("--tilt-x", `0deg`);
-    el.style.setProperty("--tilt-y", `0deg`);
+    tiltX.set(0);
+    tiltY.set(0);
   };
 
   const Icon = s.icon;
@@ -51,16 +54,15 @@ const Card = ({ s, idx }: { s: (typeof SERVICES)[number]; idx: number }) => {
       onMouseLeave={onLeave}
       className="group relative glass-strong rounded-3xl p-7 overflow-hidden perspective-1000 transition-colors duration-500 hover:border-primary/30"
       style={{
-        transform:
-          "perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))",
+        transform: `perspective(1000px) rotateX(${springTiltX.get()}deg) rotateY(${springTiltY.get()}deg)`,
         transformStyle: "preserve-3d",
-        transition: "transform 0.4s var(--ease-out-expo)",
+        transition: "border-color 0.4s var(--ease-out-expo)",
       }}
     >
       {hovered && (
         <div className="absolute inset-0 opacity-40 pointer-events-none animate-fade-in">
           <CanvasErrorBoundary>
-            <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }}>
+            <Canvas dpr={[1, 1.25]} camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: false, powerPreference: "high-performance" }}>
               <Suspense fallback={null}>
                 <ServiceMiniScene color={s.color} />
               </Suspense>
@@ -99,14 +101,13 @@ export const ServicesSection = () => {
         onEnter: (els) =>
           gsap.fromTo(
             els,
-            { opacity: 0, y: 60, rotateX: -60, transformPerspective: 1000 },
+            { opacity: 0, y: 40 },
             {
               opacity: 1,
               y: 0,
-              rotateX: 0,
-              duration: 1,
-              ease: "expo.out",
-              stagger: 0.08,
+              duration: 0.7,
+              ease: "power3.out",
+              stagger: 0.06,
               overwrite: true,
             },
           ),
