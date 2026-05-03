@@ -3,7 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Code2, Brain, Cloud, Layers, Smartphone, Boxes } from "lucide-react";
-import { useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import ServiceMiniScene from "@/components/canvas/ServiceMiniScene";
 import { CanvasErrorBoundary } from "@/components/canvas/CanvasErrorBoundary";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -46,7 +46,7 @@ const Card = ({ s, idx }: { s: (typeof SERVICES)[number]; idx: number }) => {
 
   const Icon = s.icon;
   return (
-    <article
+    <motion.article
       ref={ref}
       data-service-card
       onMouseEnter={() => !isMobile && setHovered(true)}
@@ -54,7 +54,9 @@ const Card = ({ s, idx }: { s: (typeof SERVICES)[number]; idx: number }) => {
       onMouseLeave={onLeave}
       className="group relative glass-strong rounded-3xl p-7 overflow-hidden perspective-1000 transition-colors duration-500 hover:border-primary/30"
       style={{
-        transform: `perspective(1000px) rotateX(${springTiltX.get()}deg) rotateY(${springTiltY.get()}deg)`,
+        rotateX: springTiltX,
+        rotateY: springTiltY,
+        transformPerspective: 1000,
         transformStyle: "preserve-3d",
         transition: "border-color 0.4s var(--ease-out-expo)",
       }}
@@ -85,7 +87,7 @@ const Card = ({ s, idx }: { s: (typeof SERVICES)[number]; idx: number }) => {
         <h3 className="font-display font-semibold text-lg">{s.title}</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
       </div>
-    </article>
+    </motion.article>
   );
 };
 
