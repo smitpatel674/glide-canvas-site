@@ -11,23 +11,36 @@ const TECH = [
 export const MarqueeSection = () => {
   const trackRef = useRef<HTMLDivElement>(null);
   const offset = useRef(0);
+  const halfWidthRef = useRef(0);
+  const velocityRef = useRef(0);
 
   useEffect(() => {
+    const updateMetrics = () => {
+      if (!trackRef.current) return;
+      halfWidthRef.current = trackRef.current.scrollWidth / 2;
+    };
+
+    updateMetrics();
+    window.addEventListener("resize", updateMetrics, { passive: true });
+
     let raf = 0;
     const tick = () => {
       const v = useScrollStore.getState().velocity;
+      velocityRef.current += (v - velocityRef.current) * 0.08;
       // base speed + velocity multiplier
-      offset.current -= 0.4 + Math.abs(v) * 0.05;
+      offset.current -= 0.32 + Math.abs(velocityRef.current) * 0.035;
       if (trackRef.current) {
-        // wrap modulo half-width (content is duplicated)
-        const halfWidth = trackRef.current.scrollWidth / 2;
+        const halfWidth = halfWidthRef.current;
         if (-offset.current >= halfWidth) offset.current += halfWidth;
         trackRef.current.style.transform = `translate3d(${offset.current}px,0,0)`;
       }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", updateMetrics);
+    };
   }, []);
 
   const items = [...TECH, ...TECH];
