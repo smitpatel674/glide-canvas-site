@@ -31,6 +31,7 @@ export const AboutSection = () => {
   const isMobile = useIsMobile();
 
   useEffect(() => {
+    if (isMobile) return;
     if (!wrapRef.current || !trackRef.current) return;
     const ctx = gsap.context(() => {
       const track = trackRef.current!;
@@ -54,16 +55,16 @@ export const AboutSection = () => {
       };
     }, wrapRef);
     return () => ctx.revert();
-  }, []);
+  }, [isMobile]);
 
   return (
     <section
       id="about"
       ref={wrapRef}
-      className="relative h-[100svh] w-full overflow-hidden bg-background"
+      className={`relative w-full overflow-hidden bg-background ${isMobile ? "py-24" : "h-[100svh]"}`}
       aria-label="Philosophy"
     >
-      <div ref={canvasWrap} className="absolute inset-0 -z-10 opacity-70" aria-hidden>
+      <div ref={canvasWrap} className={`absolute inset-0 -z-10 ${isMobile ? "opacity-35" : "opacity-70"}`} aria-hidden>
         <CanvasErrorBoundary>
           <Canvas
             dpr={isMobile ? [1, 1.25] : [1, 1.75]}
@@ -80,11 +81,11 @@ export const AboutSection = () => {
 
       <div
         ref={trackRef}
-        className="flex h-full items-center will-change-transform"
-        style={{ width: "max-content" }}
+        className={isMobile ? "container flex flex-col gap-6" : "flex h-full items-center will-change-transform"}
+        style={isMobile ? undefined : { width: "max-content" }}
       >
         {/* intro panel */}
-        <div className="w-[100vw] flex items-center justify-center px-6 md:px-16 shrink-0">
+        <div className={isMobile ? "" : "w-[100vw] flex items-center justify-center px-6 md:px-16 shrink-0"}>
           <div className="max-w-xl">
             <div className="text-xs font-mono uppercase tracking-[0.3em] text-accent mb-4">
               Philosophy
@@ -94,7 +95,7 @@ export const AboutSection = () => {
             </h2>
             <p className="mt-6 text-base text-muted-foreground max-w-md">
               Three principles guide every engagement — vision, approach and
-              measurable impact. Scroll →
+              measurable impact.{!isMobile ? " Scroll →" : ""}
             </p>
           </div>
         </div>
@@ -102,7 +103,7 @@ export const AboutSection = () => {
         {PANELS.map((p) => (
           <article
             key={p.n}
-            className="w-[80vw] md:w-[60vw] lg:w-[44vw] mx-6 md:mx-10 shrink-0 glass-strong rounded-3xl p-8 md:p-12 h-[60vh] flex flex-col justify-between"
+            className={`glass-strong p-8 md:p-12 flex flex-col justify-between ${isMobile ? "min-h-[320px] rounded-2xl" : "w-[80vw] md:w-[60vw] lg:w-[44vw] mx-6 md:mx-10 shrink-0 rounded-3xl h-[60vh]"}`}
           >
             <div className="flex items-center justify-between">
               <span className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
@@ -122,7 +123,7 @@ export const AboutSection = () => {
         ))}
 
         {/* spacer */}
-        <div className="w-[20vw] shrink-0" aria-hidden />
+        {!isMobile && <div className="w-[20vw] shrink-0" aria-hidden />}
       </div>
     </section>
   );
