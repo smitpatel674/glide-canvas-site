@@ -28,7 +28,7 @@ export const SectionHeader = ({
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
         className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full glass text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground"
       >
         <span className="size-1.5 rounded-full bg-accent shadow-mint" />
@@ -39,7 +39,7 @@ export const SectionHeader = ({
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
       className="font-display font-bold text-2xl md:text-3xl lg:text-4xl text-foreground"
     >
       {title}
@@ -49,7 +49,7 @@ export const SectionHeader = ({
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.5, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
         className="mt-5 text-base text-muted-foreground max-w-xl"
       >
         {description}
