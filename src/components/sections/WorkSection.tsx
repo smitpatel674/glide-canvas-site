@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ArrowUpRight } from "lucide-react";
+import { useIsMobile } from "@/hooks/useInViewCanvas";
 
 const PROJECTS = [
   {
@@ -40,8 +41,10 @@ const PROJECTS = [
 export const WorkSection = () => {
   const wrap = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
+    if (isMobile) return;
     if (!wrap.current || !track.current) return;
     const ctx = gsap.context(() => {
       const t = track.current!;
@@ -52,8 +55,10 @@ export const WorkSection = () => {
           trigger: wrap.current,
           start: "top top",
           end: () => `+=${t.scrollWidth}`,
-          scrub: 1.2,
+          scrub: 0.9,
           pin: true,
+          anticipatePin: 1,
+          fastScrollEnd: true,
           invalidateOnRefresh: true,
         },
       });
@@ -73,28 +78,28 @@ export const WorkSection = () => {
       });
     }, wrap);
     return () => ctx.revert();
-  }, []);
+  }, [isMobile]);
 
   return (
     <section
       id="work"
       ref={wrap}
-      className="relative h-[100svh] overflow-hidden bg-background"
+      className={`relative overflow-hidden bg-background ${isMobile ? "py-24" : "h-[100svh]"}`}
       aria-label="Selected work"
     >
-      <div className="container pt-16 md:pt-24 absolute top-0 inset-x-0 z-10 pointer-events-none">
+      <div className={`container z-10 pointer-events-none ${isMobile ? "relative mb-12" : "pt-16 md:pt-24 absolute top-0 inset-x-0"}`}>
         <SectionHeader eyebrow="Selected work" title="Outcomes worth scrolling for." />
       </div>
 
       <div
         ref={track}
-        className="flex items-center h-full gap-6 pl-[8vw] will-change-transform"
-        style={{ width: "max-content" }}
+        className={isMobile ? "container grid grid-cols-1 gap-5" : "flex items-center h-full gap-6 pl-[8vw] will-change-transform"}
+        style={isMobile ? undefined : { width: "max-content" }}
       >
         {PROJECTS.map((p, i) => (
           <article
             key={p.name}
-            className="relative shrink-0 w-[80vw] md:w-[55vw] lg:w-[42vw] aspect-[4/5] glass-strong rounded-3xl overflow-hidden group"
+            className={`relative glass-strong overflow-hidden group ${isMobile ? "w-full rounded-2xl aspect-[5/4]" : "shrink-0 w-[80vw] md:w-[55vw] lg:w-[42vw] aspect-[4/5] rounded-3xl"}`}
           >
             <div className={`absolute inset-0 bg-gradient-to-br ${p.color}`} />
             {/* faux-image grain */}
