@@ -11,7 +11,7 @@ export default function ContactScene() {
       uTime: { value: 0 },
       uColorA: { value: new THREE.Color("#6C63FF") },
       uColorB: { value: new THREE.Color("#00FFA3") },
-      uColorBg: { value: new THREE.Color("#050508") },
+      uColorBg: { value: new THREE.Color("#fafaff") },
     }),
     [],
   );

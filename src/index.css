@@ -10,54 +10,54 @@
    ───────────────────────────────────────────── */
 @layer base {
   :root {
-    /* Brand surface — near-black w/ blue undertone (#050508) */
-    --background: 240 20% 3%;
-    --foreground: 250 100% 95%;          /* #E8E4FF */
+    /* Light theme — soft white w/ subtle violet undertone */
+    --background: 250 40% 99%;
+    --foreground: 240 25% 10%;
 
-    --card: 240 20% 5%;
-    --card-foreground: 250 100% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 25% 10%;
 
-    --popover: 240 20% 5%;
-    --popover-foreground: 250 100% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 25% 10%;
 
     /* Electric violet #6C63FF */
-    --primary: 244 100% 70%;
-    --primary-foreground: 240 20% 3%;
+    --primary: 244 80% 62%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Neon mint #00FFA3 — used sparingly */
-    --accent: 158 100% 50%;
-    --accent-foreground: 240 20% 3%;
+    /* Mint accent (deeper for contrast on white) */
+    --accent: 162 80% 38%;
+    --accent-foreground: 0 0% 100%;
 
-    --secondary: 240 15% 10%;
-    --secondary-foreground: 250 100% 95%;
+    --secondary: 240 20% 96%;
+    --secondary-foreground: 240 25% 10%;
 
-    --muted: 240 15% 8%;
-    --muted-foreground: 250 20% 65%;
+    --muted: 240 20% 96%;
+    --muted-foreground: 240 10% 40%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 250 100% 95%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 250 100% 95%;              /* used w/ /5 opacity */
-    --input: 240 15% 12%;
-    --ring: 244 100% 70%;
+    --border: 240 20% 18%;               /* used w/ /5 opacity */
+    --input: 240 20% 92%;
+    --ring: 244 80% 62%;
 
     --radius: 0.75rem;
 
     /* Brand-specific tokens */
-    --surface-glass: 250 100% 95%;       /* used w/ /[0.04] */
-    --gradient-primary: linear-gradient(135deg, hsl(244 100% 70%), hsl(280 100% 70%));
-    --gradient-mint: linear-gradient(135deg, hsl(158 100% 50%), hsl(180 100% 50%));
-    --gradient-radial: radial-gradient(circle at 50% 0%, hsl(244 100% 70% / 0.25), transparent 60%);
+    --surface-glass: 240 25% 10%;        /* dark on light glass */
+    --gradient-primary: linear-gradient(135deg, hsl(244 80% 62%), hsl(280 75% 65%));
+    --gradient-mint: linear-gradient(135deg, hsl(162 80% 42%), hsl(190 80% 50%));
+    --gradient-radial: radial-gradient(circle at 50% 0%, hsl(244 80% 62% / 0.18), transparent 60%);
 
-    --shadow-glow: 0 0 80px hsl(244 100% 70% / 0.35);
-    --shadow-mint: 0 0 60px hsl(158 100% 50% / 0.3);
+    --shadow-glow: 0 0 80px hsl(244 80% 62% / 0.25);
+    --shadow-mint: 0 0 60px hsl(162 80% 42% / 0.2);
 
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
 
-    --sidebar-background: 240 20% 3%;
-    --sidebar-foreground: 250 100% 95%;
-    --sidebar-primary: 244 100% 70%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 240 25% 10%;
+    --sidebar-primary: 244 80% 62%;
     --sidebar-primary-foreground: 240 20% 3%;
     --sidebar-accent: 240 15% 10%;
     --sidebar-accent-foreground: 250 100% 95%;
@@ -117,15 +117,15 @@
 
 @layer components {
   .glass {
-    background: hsl(var(--surface-glass) / 0.04);
+    background: hsl(0 0% 100% / 0.6);
     border: 1px solid hsl(var(--border) / 0.08);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-strong {
-    background: hsl(var(--surface-glass) / 0.06);
-    border: 1px solid hsl(var(--border) / 0.12);
+    background: hsl(0 0% 100% / 0.75);
+    border: 1px solid hsl(var(--border) / 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
