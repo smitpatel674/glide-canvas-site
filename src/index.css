@@ -1,79 +1,90 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────
-   Nextron Solution — Design System
+   Nextron Solution — Premium Design System
+   Stripe / Linear / Apple inspired.
    All colors HSL. All tokens semantic.
    ───────────────────────────────────────────── */
 @layer base {
   :root {
-    /* Light theme — soft white w/ subtle violet undertone */
-    --background: 250 40% 99%;
-    --foreground: 240 25% 10%;
+    /* Soft off-white background (#F8F9FC) */
+    --background: 225 33% 98%;
+    --foreground: 222 47% 11%;            /* charcoal #0F172A */
 
     --card: 0 0% 100%;
-    --card-foreground: 240 25% 10%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 25% 10%;
+    --popover-foreground: 222 47% 11%;
 
-    /* Electric violet #6C63FF */
-    --primary: 244 80% 62%;
+    /* Primary purple #7C5CFF -> #5A3FFF */
+    --primary: 250 100% 68%;              /* #7C5CFF */
+    --primary-deep: 250 100% 62%;         /* #5A3FFF */
     --primary-foreground: 0 0% 100%;
 
-    /* Mint accent (deeper for contrast on white) */
-    --accent: 162 80% 38%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent: a softer lavender */
+    --accent: 255 92% 76%;
+    --accent-foreground: 222 47% 11%;
 
-    --secondary: 240 20% 96%;
-    --secondary-foreground: 240 25% 10%;
+    --secondary: 225 25% 95%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 240 20% 96%;
-    --muted-foreground: 240 10% 40%;
+    --muted: 225 25% 96%;
+    --muted-foreground: 222 16% 42%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 20% 18%;               /* used w/ /5 opacity */
-    --input: 240 20% 92%;
-    --ring: 244 80% 62%;
+    --border: 222 25% 88%;
+    --input: 222 25% 92%;
+    --ring: 250 100% 68%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
 
     /* Brand-specific tokens */
-    --surface-glass: 240 25% 10%;        /* dark on light glass */
-    --gradient-primary: linear-gradient(135deg, hsl(244 80% 62%), hsl(280 75% 65%));
-    --gradient-mint: linear-gradient(135deg, hsl(162 80% 42%), hsl(190 80% 50%));
-    --gradient-radial: radial-gradient(circle at 50% 0%, hsl(244 80% 62% / 0.18), transparent 60%);
+    --gradient-primary: linear-gradient(135deg, hsl(250 100% 68%), hsl(250 100% 62%));
+    --gradient-primary-soft: linear-gradient(135deg, hsl(250 100% 68% / 0.12), hsl(250 100% 62% / 0.04));
+    --gradient-mesh: radial-gradient(at 20% 20%, hsl(250 100% 68% / 0.18) 0px, transparent 50%),
+                     radial-gradient(at 80% 0%, hsl(265 100% 75% / 0.14) 0px, transparent 50%),
+                     radial-gradient(at 0% 100%, hsl(220 100% 70% / 0.10) 0px, transparent 50%);
+    --gradient-radial: radial-gradient(circle at 50% 0%, hsl(250 100% 68% / 0.12), transparent 60%);
 
-    --shadow-glow: 0 0 80px hsl(244 80% 62% / 0.25);
-    --shadow-mint: 0 0 60px hsl(162 80% 42% / 0.2);
+    /* Layered, soft shadows (Stripe-like) */
+    --shadow-xs: 0 1px 2px hsl(222 47% 11% / 0.04);
+    --shadow-sm: 0 2px 8px -2px hsl(222 47% 11% / 0.06), 0 1px 2px hsl(222 47% 11% / 0.04);
+    --shadow-md: 0 8px 24px -8px hsl(222 47% 11% / 0.08), 0 2px 6px hsl(222 47% 11% / 0.04);
+    --shadow-lg: 0 24px 48px -16px hsl(222 47% 11% / 0.12), 0 4px 12px hsl(222 47% 11% / 0.05);
+    --shadow-glow: 0 12px 32px -8px hsl(250 100% 62% / 0.45), 0 0 0 1px hsl(250 100% 68% / 0.18);
+    --shadow-glow-lg: 0 24px 64px -12px hsl(250 100% 62% / 0.55), 0 0 0 1px hsl(250 100% 68% / 0.2);
 
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 25% 10%;
-    --sidebar-primary: 244 80% 62%;
-    --sidebar-primary-foreground: 240 20% 3%;
-    --sidebar-accent: 240 15% 10%;
-    --sidebar-accent-foreground: 250 100% 95%;
-    --sidebar-border: 240 15% 12%;
-    --sidebar-ring: 244 100% 70%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 250 100% 68%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 225 25% 95%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 222 25% 88%;
+    --sidebar-ring: 250 100% 68%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border/10;
+    @apply border-border/60;
   }
 
   html {
-    /* Lenis controls scroll — disable native smooth */
     scroll-behavior: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   html.lenis,
@@ -95,16 +106,16 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
-    font-feature-settings: "ss01", "cv11";
+    font-feature-settings: "ss01", "cv11", "cv02";
+    letter-spacing: -0.011em;
     overflow-x: hidden;
   }
 
   ::selection {
-    background: hsl(var(--primary) / 0.4);
+    background: hsl(var(--primary) / 0.25);
     color: hsl(var(--foreground));
   }
 
-  /* Reduced-motion — kill heavy animations */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -117,17 +128,19 @@
 
 @layer components {
   .glass {
-    background: hsl(0 0% 100% / 0.6);
-    border: 1px solid hsl(var(--border) / 0.08);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: hsl(0 0% 100% / 0.7);
+    border: 1px solid hsl(var(--border) / 0.6);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    box-shadow: var(--shadow-sm);
   }
 
   .glass-strong {
-    background: hsl(0 0% 100% / 0.75);
-    border: 1px solid hsl(var(--border) / 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: hsl(0 0% 100% / 0.82);
+    border: 1px solid hsl(var(--border) / 0.7);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: var(--shadow-md);
   }
 
   .text-gradient {
@@ -137,18 +150,82 @@
     color: transparent;
   }
 
-  .text-gradient-mint {
-    background: var(--gradient-mint);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
   .grid-bg {
     background-image:
-      linear-gradient(hsl(var(--border) / 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.04) 1px, transparent 1px);
-    background-size: 64px 64px;
+      linear-gradient(hsl(var(--foreground) / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--foreground) / 0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* SVG noise texture — adds tactile grain on the hero */
+  .noise {
+    position: relative;
+  }
+  .noise::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Premium gradient CTA */
+  .btn-primary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    letter-spacing: -0.01em;
+    color: hsl(var(--primary-foreground));
+    background: var(--gradient-primary);
+    box-shadow: var(--shadow-glow);
+    transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
+  }
+  .btn-primary::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(0 0% 100% / 0.4), transparent 50%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px) scale(1.01);
+    box-shadow: var(--shadow-glow-lg);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    letter-spacing: -0.01em;
+    color: hsl(var(--foreground));
+    background: hsl(0 0% 100%);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-xs);
+    transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo), border-color 0.3s;
+  }
+  .btn-ghost:hover {
+    transform: translateY(-1px);
+    border-color: hsl(var(--foreground) / 0.25);
+    box-shadow: var(--shadow-sm);
   }
 }
 
@@ -162,4 +239,11 @@
   .preserve-3d {
     transform-style: preserve-3d;
   }
+  .bg-mesh {
+    background-image: var(--gradient-mesh);
+  }
+  .shadow-soft-sm { box-shadow: var(--shadow-sm); }
+  .shadow-soft-md { box-shadow: var(--shadow-md); }
+  .shadow-soft-lg { box-shadow: var(--shadow-lg); }
+  .shadow-soft-glow { box-shadow: var(--shadow-glow); }
 }

@@ -17,8 +17,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['"Syne"', "system-ui", "sans-serif"],
-        body: ['"DM Sans"', "system-ui", "sans-serif"],
+        display: ['"Inter"', "system-ui", "sans-serif"],
+        body: ['"Inter"', "system-ui", "sans-serif"],
         mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
       fontSize: {
@@ -85,12 +85,16 @@ export default {
       },
       backgroundImage: {
         "gradient-primary": "var(--gradient-primary)",
-        "gradient-mint": "var(--gradient-mint)",
+        "gradient-primary-soft": "var(--gradient-primary-soft)",
+        "gradient-mesh": "var(--gradient-mesh)",
         "gradient-radial": "var(--gradient-radial)",
       },
       boxShadow: {
         glow: "var(--shadow-glow)",
-        mint: "var(--shadow-mint)",
+        "glow-lg": "var(--shadow-glow-lg)",
+        "soft-sm": "var(--shadow-sm)",
+        "soft-md": "var(--shadow-md)",
+        "soft-lg": "var(--shadow-lg)",
       },
       transitionTimingFunction: {
         "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
