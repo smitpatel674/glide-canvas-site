@@ -7,6 +7,7 @@ import { MarqueeSection } from "@/components/sections/MarqueeSection";
 import { TeamSection } from "@/components/sections/TeamSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { ContactSection } from "@/components/sections/ContactSection";
+import { Footer } from "@/components/sections/Footer";
 
 const Index = () => (
   <main className="relative bg-background text-foreground">
@@ -19,6 +20,7 @@ const Index = () => (
     <TeamSection />
     <TestimonialsSection />
     <ContactSection />
+    <Footer />
   </main>
 );
 

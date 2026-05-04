@@ -1,27 +1,15 @@
-import { Suspense, useEffect, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
-import HeroScene from "@/components/canvas/HeroScene";
-import { CanvasErrorBoundary } from "@/components/canvas/CanvasErrorBoundary";
-import { MagneticButton } from "@/components/ui/MagneticButton";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { useInViewCanvas, useIsMobile } from "@/hooks/useInViewCanvas";
 
 const STATS = [
-  { value: 200, suffix: "+", label: "Shipped products", sub: "since 2014" },
-  { value: 50, suffix: "+", label: "Global clients", sub: "across 14 countries" },
-  { value: 98, suffix: "%", label: "Retention rate", sub: "year over year" },
+  { value: 200, suffix: "+", label: "Products shipped" },
+  { value: 50, suffix: "+", label: "Global clients" },
+  { value: 10, suffix: "+", label: "Years engineering" },
 ];
 
-const CLIENTS = ["VERCEL", "LINEAR", "STRIPE", "FIGMA", "NOTION", "ARC"];
-
-const SHIPPING = [
-  "AI agents · Helix Pay v3",
-  "Realtime ops · Atlas Climate",
-  "WebGL pitch · Vesper Health",
-  "Design system · Northwind",
-];
+const CLIENTS = ["Stripe", "Linear", "Vercel", "Figma", "Notion", "Arc"];
 
 function CountUp({ to, suffix }: { to: number; suffix: string }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -44,219 +32,291 @@ function CountUp({ to, suffix }: { to: number; suffix: string }) {
   return <span ref={ref}>0{suffix}</span>;
 }
 
+/**
+ * Abstract mesh-gradient orb — the standout hero visual.
+ * Built with layered radial gradients + soft float for premium depth.
+ */
+function MeshOrb() {
+  return (
+    <div
+      aria-hidden
+      className="absolute -right-32 top-1/2 -translate-y-1/2 hidden lg:block w-[640px] h-[640px] pointer-events-none"
+    >
+      <motion.div
+        animate={{ y: [0, -18, 0], rotate: [0, 6, 0] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+        className="relative w-full h-full"
+      >
+        {/* Base orb */}
+        <div
+          className="absolute inset-12 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle at 30% 30%, hsl(255 100% 80%) 0%, hsl(250 100% 68%) 35%, hsl(250 100% 62%) 70%, hsl(245 80% 45%) 100%)",
+            filter: "blur(2px)",
+            boxShadow:
+              "0 60px 120px -20px hsl(250 100% 62% / 0.5), inset 0 -40px 80px hsl(245 100% 40% / 0.4), inset 0 40px 80px hsl(0 0% 100% / 0.3)",
+          }}
+        />
+        {/* Highlight */}
+        <div
+          className="absolute top-20 left-24 w-40 h-40 rounded-full opacity-80"
+          style={{
+            background: "radial-gradient(circle, hsl(0 0% 100% / 0.7), transparent 70%)",
+            filter: "blur(20px)",
+          }}
+        />
+        {/* Outer glow */}
+        <div
+          className="absolute inset-0 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, hsl(250 100% 68% / 0.25) 0%, transparent 60%)",
+            filter: "blur(40px)",
+          }}
+        />
+      </motion.div>
+    </div>
+  );
+}
+
 export const HeroSection = () => {
   const headlineRef = useRef<HTMLHeadingElement>(null);
-  const tickerRef = useRef<HTMLDivElement>(null);
-  const { ref: canvasWrap, inView } = useInViewCanvas<HTMLDivElement>("100px");
-  const isMobile = useIsMobile();
 
-  // Char-by-char stagger reveal
   useEffect(() => {
     if (!headlineRef.current) return;
     const ctx = gsap.context(() => {
-      const chars = headlineRef.current!.querySelectorAll<HTMLElement>("[data-char]");
-      gsap.from(chars, {
-        yPercent: 110,
+      const lines = headlineRef.current!.querySelectorAll<HTMLElement>("[data-line]");
+      gsap.from(lines, {
+        yPercent: 105,
         opacity: 0,
-        duration: 1.15,
+        duration: 1.1,
         ease: "expo.out",
-        stagger: 0.018,
-        delay: 0.35,
+        stagger: 0.08,
+        delay: 0.25,
       });
     }, headlineRef);
     return () => ctx.revert();
   }, []);
 
-  // Rotating "now shipping" ticker
-  useEffect(() => {
-    if (!tickerRef.current) return;
-    const items = tickerRef.current.querySelectorAll<HTMLElement>("[data-ticker-item]");
-    if (!items.length) return;
-    const tl = gsap.timeline({ repeat: -1, defaults: { ease: "expo.inOut" } });
-    items.forEach((_, i) => {
-      const next = items[(i + 1) % items.length];
-      tl.to(items[i], { yPercent: -110, opacity: 0, duration: 0.6 }, "+=2.2")
-        .fromTo(next, { yPercent: 110, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6 }, "<");
-    });
-    return () => {
-      tl.kill();
-    };
-  }, []);
-
-  const headline = "We engineer next digital success.";
-  const words = headline.split(" ");
-
   return (
     <section
       id="top"
-      className="relative min-h-[100svh] w-full overflow-hidden flex items-center"
+      className="relative min-h-[100svh] w-full overflow-hidden flex items-center noise"
       aria-label="Hero"
     >
-      {/* Canvas background */}
-      <div ref={canvasWrap} className="absolute inset-0 -z-10" aria-hidden>
-        <CanvasErrorBoundary>
-          <Canvas
-            dpr={isMobile ? [1, 1.25] : [1, 1.75]}
-            camera={{ position: [0, 0, 6], fov: 45 }}
-            frameloop={inView ? "always" : "demand"}
-            gl={{ antialias: !isMobile, alpha: true, powerPreference: "high-performance" }}
-          >
-            <Suspense fallback={null}>
-              <HeroScene lite={isMobile} />
-            </Suspense>
-          </Canvas>
-        </CanvasErrorBoundary>
-        <div className="absolute inset-0 grid-bg opacity-60 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-radial pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background to-transparent" />
-      </div>
+      {/* Layered backdrop — soft mesh + grid + vignette */}
+      <div className="absolute inset-0 bg-mesh pointer-events-none" aria-hidden />
+      <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" aria-hidden />
+      <div
+        className="absolute inset-x-0 top-0 h-[60vh] pointer-events-none"
+        aria-hidden
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 0%, hsl(250 100% 68% / 0.10), transparent 70%)",
+        }}
+      />
 
-      <div className="container relative z-10 pt-32 pb-24">
-        {/* Status pill */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="inline-flex items-center gap-3 mb-8 pl-2 pr-4 py-1.5 rounded-full glass-strong text-[11px] font-mono uppercase tracking-[0.22em] text-muted-foreground"
-        >
-          <span className="relative flex size-2">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-accent opacity-60 animate-ping" />
-            <span className="relative inline-flex rounded-full size-2 bg-accent" />
-          </span>
-          Booking Q3 · 2 slots left
-          <span className="h-3 w-px bg-border/30" />
-          <span className="text-foreground/70">Nextron Solution</span>
-        </motion.div>
+      <MeshOrb />
 
-        {/* Headline */}
-        <h1
-          ref={headlineRef}
-          className="font-display font-bold text-[clamp(2.25rem,7vw,5.75rem)] max-w-6xl leading-[0.95] tracking-tight"
-          aria-label={headline}
-        >
-          {words.map((w, wi) => (
-            <span key={wi} className="inline-block mr-[0.25em] last:mr-0">
-              <span className="inline-flex overflow-hidden align-bottom">
-                {w.split("").map((c, ci) => (
-                  <span
-                    key={ci}
-                    data-char
-                    className={
-                      wi === words.length - 2
-                        ? "inline-block text-gradient"
-                        : "inline-block"
-                    }
-                  >
-                    {c}
-                  </span>
-                ))}
-              </span>
-            </span>
-          ))}
-        </h1>
-
-        {/* Subhead split — left description, right meta */}
-        <div className="mt-12 grid md:grid-cols-12 gap-8 md:gap-12 items-start">
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.0 }}
-            className="md:col-span-7 text-base md:text-lg leading-relaxed text-muted-foreground max-w-xl"
-          >
-            A senior engineering studio building <span className="text-foreground">AI-native, cloud and 3D</span> products
-            for ambitious founders and enterprises. We pair architecture-grade
-            craft with measurable business outcomes.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.15 }}
-            className="md:col-span-4 md:col-start-9 space-y-3 md:border-l md:border-border/10 md:pl-6"
-          >
-            <div className="flex items-baseline gap-3 text-[10px] font-mono uppercase tracking-[0.25em] text-muted-foreground">
-              <span className="text-accent">●</span> Now shipping
-            </div>
-            <div
-              ref={tickerRef}
-              className="relative h-6 overflow-hidden font-display text-base text-foreground"
+      <div className="container relative z-10 pt-36 pb-24 lg:pt-40">
+        <div className="grid lg:grid-cols-12 gap-12 items-center">
+          {/* LEFT — slightly off-grid (cols 1-7) for asymmetry */}
+          <div className="lg:col-span-7">
+            {/* Status pill */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.05 }}
+              className="inline-flex items-center gap-2.5 mb-9 pl-2 pr-4 py-1.5 rounded-full glass text-[12px] font-medium text-muted-foreground"
             >
-              {SHIPPING.map((s, i) => (
-                <div
-                  key={s}
-                  data-ticker-item
-                  className="absolute inset-0"
-                  style={{
-                    transform: i === 0 ? "translateY(0)" : "translateY(110%)",
-                    opacity: i === 0 ? 1 : 0,
-                  }}
-                >
-                  {s}
+              <span className="relative flex size-1.5">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 animate-ping" />
+                <span className="relative inline-flex rounded-full size-1.5 bg-primary" />
+              </span>
+              <span className="text-foreground">Booking Q3 2026</span>
+              <span className="text-muted-foreground/60">— 2 slots remaining</span>
+            </motion.div>
+
+            {/* Headline */}
+            <h1
+              ref={headlineRef}
+              className="font-display font-bold text-[clamp(2.5rem,6.4vw,5.25rem)] leading-[0.98] tracking-[-0.035em] text-foreground"
+            >
+              <span className="block overflow-hidden">
+                <span data-line className="block">We engineer</span>
+              </span>
+              <span className="block overflow-hidden">
+                <span data-line className="block">
+                  next{" "}
+                  <span className="relative inline-block italic font-semibold">
+                    <span className="text-gradient">digital</span>
+                    <svg
+                      aria-hidden
+                      viewBox="0 0 200 12"
+                      className="absolute -bottom-1 left-0 w-full h-2"
+                      preserveAspectRatio="none"
+                    >
+                      <path
+                        d="M2 8 Q50 2 100 6 T198 6"
+                        fill="none"
+                        stroke="url(#g1)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                      <defs>
+                        <linearGradient id="g1" x1="0" x2="1">
+                          <stop offset="0" stopColor="hsl(250 100% 68%)" />
+                          <stop offset="1" stopColor="hsl(250 100% 62%)" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </span>
+                </span>
+              </span>
+              <span className="block overflow-hidden">
+                <span data-line className="block">success.</span>
+              </span>
+            </h1>
+
+            {/* Subhead */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.85 }}
+              className="mt-8 max-w-xl text-[17px] md:text-[18px] leading-[1.55] text-muted-foreground font-normal"
+            >
+              A senior engineering studio shipping AI, cloud and 3D-native
+              products. Architecture-grade craft, measurable business outcomes —
+              from the first commit to year five.
+            </motion.p>
+
+            {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.0 }}
+              className="mt-10 flex flex-wrap items-center gap-3"
+            >
+              <a href="#contact" className="btn-primary group">
+                Start a Project
+                <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+              </a>
+              <a href="#work" className="btn-ghost group">
+                See Our Work
+                <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </motion.div>
+
+            {/* Trust micro-line */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1.4 }}
+              className="mt-12 flex items-center gap-4 text-[12px] text-muted-foreground"
+            >
+              <div className="flex -space-x-2">
+                {[0, 1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="size-7 rounded-full border-2 border-background"
+                    style={{
+                      background: `linear-gradient(135deg, hsl(${
+                        220 + i * 15
+                      } 70% 70%), hsl(${250 + i * 10} 80% 60%))`,
+                    }}
+                  />
+                ))}
+              </div>
+              <span>
+                Trusted by <span className="text-foreground font-medium">50+</span> teams ·
+                avg. reply <span className="text-foreground font-medium">&lt; 12h</span>
+              </span>
+            </motion.div>
+          </div>
+
+          {/* RIGHT — minimal meta card (asymmetric, cols 9-12) */}
+          <motion.aside
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 1.1 }}
+            className="lg:col-span-4 lg:col-start-9 lg:mt-12"
+          >
+            <div className="glass-strong rounded-2xl p-6 space-y-5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground">
+                  Now shipping
+                </span>
+                <span className="text-[10px] font-mono text-primary">●  LIVE</span>
+              </div>
+              <div>
+                <div className="text-[15px] font-medium text-foreground">
+                  Helix Pay — v3.0
                 </div>
-              ))}
+                <div className="text-[13px] text-muted-foreground mt-0.5">
+                  AI-native payments orchestration
+                </div>
+              </div>
+              <div className="h-px bg-border/60" />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-1">
+                    Conversion
+                  </div>
+                  <div className="text-lg font-semibold text-foreground">
+                    +312<span className="text-primary">%</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-1">
+                    Time-to-ship
+                  </div>
+                  <div className="text-lg font-semibold text-foreground">
+                    9<span className="text-muted-foreground/60">w</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </motion.div>
+          </motion.aside>
         </div>
 
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.3 }}
-          className="mt-12 flex flex-wrap items-center gap-4"
-        >
-          <MagneticButton variant="primary">
-            Start a project <ArrowRight className="size-4" />
-          </MagneticButton>
-          <MagneticButton variant="ghost" strength={0.2}>
-            See our work <ArrowUpRight className="size-4" />
-          </MagneticButton>
-          <div className="flex items-center gap-3 ml-2 text-[11px] font-mono uppercase tracking-[0.22em] text-muted-foreground">
-            <span className="h-px w-8 bg-border/30" />
-            Avg. reply &lt; 12h
-          </div>
-        </motion.div>
-
-        {/* Stats */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl">
+        {/* Stats row */}
+        <div className="mt-24 grid grid-cols-1 sm:grid-cols-3 gap-px bg-border/60 rounded-2xl overflow-hidden shadow-soft-sm border border-border/60">
           {STATS.map((s, i) => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 1.45 + i * 0.1 }}
-              className="glass rounded-2xl p-5 flex flex-col gap-1.5"
+              transition={{ duration: 0.7, delay: 1.3 + i * 0.08 }}
+              className="bg-card p-7 flex flex-col gap-2"
             >
-              <div className="font-display font-bold text-3xl md:text-4xl text-gradient leading-none">
-                <CountUp to={s.value} suffix={s.suffix} />
+              <div className="font-display font-bold text-4xl md:text-5xl tracking-tight leading-none">
+                <span className="text-gradient">
+                  <CountUp to={s.value} suffix={s.suffix} />
+                </span>
               </div>
-              <div className="mt-2 text-[10px] font-mono uppercase tracking-[0.2em] text-foreground">
+              <div className="text-[13px] text-muted-foreground font-medium">
                 {s.label}
-              </div>
-              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground">
-                {s.sub}
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Trusted by — logo strip */}
+        {/* Trusted by — refined logo strip */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.8 }}
-          className="mt-16 flex flex-col gap-4"
+          transition={{ duration: 1, delay: 1.6 }}
+          className="mt-20 flex flex-col items-center gap-6"
         >
-          <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-[0.3em] text-muted-foreground">
-            <span className="h-px flex-1 bg-border/15 max-w-16" />
+          <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-muted-foreground">
             Trusted by teams shipping at scale
-            <span className="h-px flex-1 bg-border/15" />
           </div>
-          <div className="flex flex-wrap items-center gap-x-10 gap-y-3 opacity-70">
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
             {CLIENTS.map((c) => (
               <span
                 key={c}
-                className="font-display font-bold text-sm md:text-base tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
+                className="font-display font-semibold text-base tracking-[-0.01em] text-muted-foreground/70 hover:text-foreground transition-colors duration-300"
               >
                 {c}
               </span>
@@ -264,33 +324,6 @@ export const HeroSection = () => {
           </div>
         </motion.div>
       </div>
-
-      {/* Scroll cue + section index */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="absolute bottom-6 inset-x-0 hidden md:flex items-end justify-between container pointer-events-none"
-      >
-        <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-muted-foreground">
-          01 / 08 · Intro
-        </div>
-        <div className="flex flex-col items-center gap-2 text-[10px] font-mono uppercase tracking-[0.3em] text-muted-foreground">
-          Scroll
-          <div className="relative h-12 w-px bg-border/20 overflow-hidden">
-            <motion.div
-              animate={{ y: ["-100%", "100%"] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-x-0 h-1/2 bg-gradient-to-b from-transparent via-foreground to-transparent"
-            />
-          </div>
-        </div>
-        <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-muted-foreground text-right">
-          NS-2014 / v4.2
-          <br />
-          <span className="text-foreground/50">Lat 40.7 · Lon -74.0</span>
-        </div>
-      </motion.div>
     </section>
   );
 };
